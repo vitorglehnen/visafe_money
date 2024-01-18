@@ -1,5 +1,5 @@
 import json
-from flask import Flask, jsonify, request, Blueprint, make_response
+from flask import Flask, jsonify, request, Blueprint, make_response, Response
 from connection import connect
 
 conexao = connect.conexao_db()
@@ -18,14 +18,20 @@ def categorias_incluir():
 
     cursor = conexao.cursor()
     cursor.execute(f"""
-                    INSERT INTO categorias.item(nome)
-	                VALUES ({nome})
+                    INSERT INTO categorias(ct_nome)
+	                VALUES ('{nome}')
                     """)
 
     conexao.commit()
     cursor.close()
 
-    return jsonify('Categoria inserida com sucesso!')
+    resposta_sucesso = {
+        "status_code": 201,
+        "response": "Categoria inserida com sucesso!",
+        "nome": nome
+    }
+
+    return Response(response=json.dumps(resposta_sucesso, ensure_ascii=False, sort_keys=False, indent=2), status=201, content_type='application/json; charset=utf-8')
 
 
 @categorias.route('/categorias/listar', methods=['GET'])
