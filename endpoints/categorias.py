@@ -6,7 +6,7 @@ categorias = Blueprint('categorias', __name__)
 
 
 @categorias.route('/categorias/incluir', methods=['POST'])
-def categorias_incluir():
+def incluir_categoria():
     categoria_object = Categoria()
     categoria_object.set_nome(request.json['nome'])
 
@@ -26,11 +26,13 @@ def categorias_incluir():
         return make_response(resposta_erro, status_code)
 
     categoria_object.insere_categoria()
+    categoria_object.set_id(categoria_object.busca_categoria_por_nome()[0][0])
 
     status_code = 201
     resposta_sucesso = {
         "status_code": status_code,
         "response": "Categoria inserida com sucesso!",
+        "codigo": categoria_object.get_id(),
         "nome": categoria_object.get_nome()
     }
 
@@ -38,7 +40,7 @@ def categorias_incluir():
 
 
 @categorias.route('/categorias/listar', methods=['GET'])
-def listar_categorias():
+def listar_categoria():
     categoria_object = Categoria()
 
     categorias_cadastradas = categoria_object.busca_categorias()

@@ -21,12 +21,20 @@ class Categoria:
 
     def registro_existente(self):
         cursor = self.__conexao.cursor()
-        cursor.execute(f"""
-                        SELECT ct_id
-                        FROM categorias
-                        WHERE ct_nome = COALESCE('{self.__nome}', '')
-                        OR ct_id = COALESCE({self.__id}, -1);
-                        """)
+
+        if self.__id is None:
+            cursor.execute(f"""
+                            SELECT ct_id
+                            FROM categorias
+                            WHERE ct_nome = '{self.__nome}';
+                            """)
+        else:
+            cursor.execute(f"""
+                            SELECT ct_id
+                            FROM categorias
+                            WHERE ct_nome = '{self.__nome}'
+                            AND ct_id != {self.__id};
+                            """)
 
         dataset = cursor.fetchall()
         cursor.close()
@@ -47,6 +55,19 @@ class Categoria:
         cursor.execute(f"""
                         SELECT ct_id, ct_nome
                         FROM categorias;
+                        """)
+
+        dataset = cursor.fetchall()
+        cursor.close()
+
+        return dataset
+
+    def busca_categoria_por_nome(self):
+        cursor = self.__conexao.cursor()
+        cursor.execute(f"""
+                        SELECT ct_id, ct_nome
+                        FROM categorias
+                        WHERE ct_nome = '{self.__nome}';
                         """)
 
         dataset = cursor.fetchall()
